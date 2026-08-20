@@ -1,11 +1,16 @@
 import Decimal from 'decimal.js';
 import { JournalEntryLine } from './journal-entry-line';
+import { JournalEntryStatus } from './journal-entry-status';
 
 export class JournalEntry {
+    private status: JournalEntryStatus;
+
     private constructor(
         private readonly id: string,
         private readonly lines: JournalEntryLine[],
     ) {
+        this.status = JournalEntryStatus.DRAFT;
+
         this.validate();
     }
 
@@ -42,11 +47,25 @@ export class JournalEntry {
         }
     }
 
+    post(): void {
+        if (this.status === JournalEntryStatus.POSTED) {
+            throw new Error(
+                'Journal entry is already posted',
+            );
+        }
+
+        this.status = JournalEntryStatus.POSTED;
+    }
+
     getId(): string {
         return this.id;
     }
 
     getLines(): readonly JournalEntryLine[] {
         return this.lines;
+    }
+
+    getStatus(): JournalEntryStatus {
+        return this.status;
     }
 }
