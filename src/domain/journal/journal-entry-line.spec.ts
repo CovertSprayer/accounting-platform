@@ -31,6 +31,28 @@ describe('JournalEntryLine', () => {
     expect(line.getCredit().toString()).toBe('50000.00');
   });
 
+  it('should reject negative debit amount', () => {
+    expect(() =>
+      JournalEntryLine.debit(
+        bankAccount,
+        Money.create('-100'),
+      ),
+    ).toThrow(
+      'Journal entry line amount cannot be negative',
+    );
+  });
+
+  it('should reject negative credit amount', () => {
+    expect(() =>
+      JournalEntryLine.credit(
+        bankAccount,
+        Money.create('-100'),
+      ),
+    ).toThrow(
+      'Journal entry line amount cannot be negative',
+    );
+  });
+
   it('should reject zero debit', () => {
     expect(() =>
       JournalEntryLine.debit(

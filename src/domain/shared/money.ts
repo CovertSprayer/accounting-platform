@@ -7,11 +7,6 @@ export class Money {
 
   static create(amount: Decimal.Value): Money {
     const decimal = new Decimal(amount);
-
-    if (decimal.isNegative()) {
-      throw new Error('Money amount cannot be negative');
-    }
-
     return new Money(decimal);
   }
 
@@ -25,16 +20,15 @@ export class Money {
 
   subtract(other: Money): Money {
     const result = this.amount.minus(other.amount);
-
-    if (result.isNegative()) {
-      throw new Error('Money cannot become negative');
-    }
-
     return Money.create(result);
   }
 
   isZero(): boolean {
     return this.amount.isZero();
+  }
+
+  isNegative(): boolean {
+    return this.amount.isNegative();
   }
 
   equals(other: Money): boolean {

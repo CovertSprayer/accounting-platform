@@ -14,6 +14,12 @@ export class JournalEntryLine {
                 'Journal entry line amount must be greater than zero',
             );
         }
+
+        if (amount.isNegative()) {
+            throw new Error(
+                'Journal entry line amount cannot be negative',
+            );
+        }
     }
 
     static debit(account: Account, amount: Money): JournalEntryLine {
