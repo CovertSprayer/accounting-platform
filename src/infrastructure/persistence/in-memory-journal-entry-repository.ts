@@ -4,11 +4,11 @@ import { JournalEntryRepository } from '../../domain/journal/journal-entry-repos
 export class InMemoryJournalEntryRepository implements JournalEntryRepository {
     private readonly entries = new Map<string, JournalEntry>();
 
-    async save(entry: JournalEntry): Promise<void> {
-        this.entries.set(entry.getId(), entry);
+    async save(companyId: string, entry: JournalEntry): Promise<void> {
+        this.entries.set(`${companyId}:${entry.getId()}`, entry);
     }
 
-    async findById(id: string): Promise<JournalEntry | null> {
-        return this.entries.get(id) ?? null;
+    async findById(companyId: string, id: string): Promise<JournalEntry | null> {
+        return this.entries.get(`${companyId}:${id}`) ?? null;
     }
 }

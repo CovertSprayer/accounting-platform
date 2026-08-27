@@ -31,11 +31,11 @@ describe('PostJournalEntry', () => {
 
         const repository = new InMemoryJournalEntryRepository();
 
-        repository.save(entry);
+        repository.save('company-1', entry);
 
         const useCase = new PostJournalEntry(repository);
 
-        await useCase.execute('entry-1');
+        await useCase.execute('company-1', 'entry-1');
 
         expect(entry.getStatus()).toBe(JournalEntryStatus.POSTED);
     })

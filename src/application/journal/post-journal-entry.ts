@@ -5,12 +5,12 @@ export class PostJournalEntry {
         private readonly repository: JournalEntryRepository,
     ) { }
 
-    async execute(id: string): Promise<void> {
-        const entry = await this.repository.findById(id);
+    async execute(companyId: string, id: string): Promise<void> {
+        const entry = await this.repository.findById(companyId, id);
         if (!entry) {
             throw new Error(`Journal entry not found: ${id}`);
         }
         entry.post();
-        await this.repository.save(entry);
+        await this.repository.save(companyId, entry);
     }
 }

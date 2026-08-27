@@ -22,7 +22,7 @@ describe('CreateJournalEntry', () => {
 
     const useCase = new CreateJournalEntry(repository);
 
-    const entry = await useCase.execute({
+    const entry = await useCase.execute('company-1', {
       id: 'entry-1',
       lines: [
         {
@@ -46,7 +46,7 @@ describe('CreateJournalEntry', () => {
 
     expect(entry.getLines()).toHaveLength(2);
 
-    const savedEntry = await repository.findById('entry-1');
+    const savedEntry = await repository.findById('company-1', 'entry-1');
 
     expect(savedEntry).toBe(entry);
   });
@@ -57,7 +57,7 @@ describe('CreateJournalEntry', () => {
     const useCase = new CreateJournalEntry(repository);
 
     await expect(
-      useCase.execute({
+      useCase.execute('company-1', {
         id: 'entry-1',
         lines: [
           {

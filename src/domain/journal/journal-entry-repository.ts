@@ -1,6 +1,6 @@
 import { JournalEntry } from './journal-entry';
 
 export interface JournalEntryRepository {
-  save(entry: JournalEntry): Promise<void>;
-  findById(id: string): Promise<JournalEntry | null>;
+  save(companyId: string, entry: JournalEntry): Promise<void>;
+  findById(companyId: string, id: string): Promise<JournalEntry | null>;
 }

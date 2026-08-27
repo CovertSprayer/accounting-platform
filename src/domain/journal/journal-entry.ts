@@ -10,7 +10,6 @@ export class JournalEntry {
         private readonly lines: JournalEntryLine[],
     ) {
         this.status = JournalEntryStatus.DRAFT;
-
         this.validate();
     }
 
@@ -19,6 +18,16 @@ export class JournalEntry {
         lines: JournalEntryLine[],
     ): JournalEntry {
         return new JournalEntry(id, lines);
+    }
+
+    static reconstitute(
+        id: string,
+        lines: JournalEntryLine[],
+        status: JournalEntryStatus,
+    ): JournalEntry {
+        const entry = new JournalEntry(id,lines);
+        entry.status = status;
+        return entry;
     }
 
     private validate(): void {

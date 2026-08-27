@@ -18,7 +18,7 @@ export class CreateJournalEntry {
         private readonly repository: JournalEntryRepository,
     ) {}
 
-    async execute(input: CreateJournalEntryInput): Promise<JournalEntry> {
+    async execute(companyId: string, input: CreateJournalEntryInput): Promise<JournalEntry> {
         const lines = input.lines.map(line => {
             const amount = Money.create(line.amount);
 
@@ -31,7 +31,7 @@ export class CreateJournalEntry {
         });
 
         const journalEntry = JournalEntry.create(input.id, lines);
-        await this.repository.save(journalEntry);
+        await this.repository.save(companyId, journalEntry);
         return journalEntry;
     }
 }
