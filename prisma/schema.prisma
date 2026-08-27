@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Company {
+  id   String @id
+  name String
+
+  accounts       Account[]
+  journalEntries JournalEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id        String      @id
+  companyId String
+  name      String
+  type      AccountType
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  journalLines JournalEntryLine[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+model JournalEntry {
+  id        String             @id
+  companyId String
+  status    JournalEntryStatus
+
+  company Company            @relation(fields: [companyId], references: [id])
+  lines   JournalEntryLine[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+model JournalEntryLine {
+  id             String @id
+  journalEntryId String
+  accountId      String
+
+  debit  Decimal @db.Decimal(20, 4)
+  credit Decimal @db.Decimal(20, 4)
+
+  journalEntry JournalEntry @relation(fields: [journalEntryId], references: [id])
+  account      Account      @relation(fields: [accountId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([journalEntryId])
+  @@index([accountId])
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+enum JournalEntryStatus {
+  DRAFT
+  POSTED
+}
