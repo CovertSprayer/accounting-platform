@@ -7,7 +7,7 @@ import { Money } from '../../../domain/shared/money';
 import { 
     AccountType as PrismaAccountType, 
     JournalEntryStatus as PrismaJournalEntryStatus 
-} from '../../../../generated/prisma/enums';
+} from '@prisma/client';
 
 export class JournalEntryMapper {
     static toDomain(data: {
