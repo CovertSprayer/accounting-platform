@@ -33,7 +33,7 @@ export class PrismaAccountRepository implements AccountRepository {
             return null;
         }
 
-        return Account.create(data.id, data.name, this.toDomainAccountType(data.type));
+        return Account.create(data.id, data.companyId, data.name, this.toDomainAccountType(data.type));
     }
 
     private toDomainAccountType(

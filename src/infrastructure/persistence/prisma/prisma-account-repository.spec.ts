@@ -47,6 +47,7 @@ describe('PrismaAccountRepository', () => {
     it("should save and retrieve an account", async () => {
         const account = Account.create(
             "cash-1",
+            companyId,
             "Cash",
             AccountType.ASSET
         );
@@ -58,6 +59,8 @@ describe('PrismaAccountRepository', () => {
         expect(result).not.toBeNull();
 
         expect(result?.getId()).toBe(account.getId());
+
+        expect(result?.getCompanyId()).toBe(account.getCompanyId());
 
         expect(result?.getName()).toBe(account.getName());
 

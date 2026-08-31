@@ -9,9 +9,11 @@ export class CreateCompany {
     async execute(
         id: string,
         name: string,
-    ): Promise<void> {
+    ): Promise<Company> {
         const company = Company.create(id, name);
 
         await this.repository.save(company);
+
+        return company;
     }
 }

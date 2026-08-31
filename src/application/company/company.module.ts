@@ -4,6 +4,7 @@ import { CreateCompany } from './create-company';
 import { CompanyRepository } from '../../domain/company/company-repository';
 
 import { PrismaCompanyRepository } from '../../infrastructure/persistence/prisma/prisma-company-repository';
+import { CompanyController } from './company.controller';
 // import { PrismaService } from '../../infrastructure/database/prisma.service';
 
 export const COMPANY_REPOSITORY = Symbol(
@@ -11,6 +12,7 @@ export const COMPANY_REPOSITORY = Symbol(
 );
 
 @Module({
+    controllers: [CompanyController],
     providers: [
         // PrismaService,
 

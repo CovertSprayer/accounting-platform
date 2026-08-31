@@ -13,7 +13,7 @@ export class CreateAccount {
         name: string,
         type: AccountType
     ): Promise<Account> {
-        const account = Account.create(id, name, type);
+        const account = Account.create(id, companyId, name, type);
         await this.repository.save(companyId, account);
         return account;
     }

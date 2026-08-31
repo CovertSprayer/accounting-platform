@@ -19,6 +19,7 @@ export class JournalEntryMapper {
             credit: unknown;
             account: {
                 id: string;
+                companyId: string;
                 name: string;
                 type: PrismaAccountType;
             };
@@ -27,6 +28,7 @@ export class JournalEntryMapper {
         const lines = data.lines.map((line) => {
             const account = Account.create(
                 line.account.id,
+                line.account.companyId,
                 line.account.name,
                 this.mapAccountType(line.account.type),
             );

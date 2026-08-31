@@ -1,5 +1,5 @@
 import { AccountType } from './account-type';
-import { AccountBalanceStrategy } from './balance-strategy';
+import { AccountBalanceStrategy } from './account-balance-strategy';
 import { CreditNormalBalanceStrategy } from './credit-normal-balance-strategy';
 import { DebitNormalBalanceStrategy } from './debit-normal-balance-strategy';
 
@@ -14,6 +14,11 @@ export class AccountBalanceStrategyFactory {
             case AccountType.EQUITY:
             case AccountType.REVENUE:
                 return new CreditNormalBalanceStrategy();
+                
+            default:
+                throw new Error(
+                    `Unsupported account type: ${accountType}`,
+                );
         }
     }
 }
