@@ -34,23 +34,49 @@ export class PrismaJournalEntryRepository implements JournalEntryRepository {
         return JournalEntryMapper.toDomain(data);
     }
 
-    async save(companyId: string, entry: JournalEntry): Promise<void> {
+    async save(
+        companyId: string,
+        entry: JournalEntry,
+    ): Promise<void> {
         await this.prisma.$transaction(async (tx) => {
-            await tx.journalEntry.create({
-                data: {
+            const existingEntry = await tx.journalEntry.findFirst({
+                where: {
                     id: entry.getId(),
-                    companyId: companyId,
-                    status: entry.getStatus(),
+                    companyId,
+                },
+                select: {
+                    id: true,
+                },
+            });
 
-                    lines: {
-                        create: entry.getLines().map((line) => ({
-                            id: crypto.randomUUID(),
-                            companyId,
-                            accountId: line.getAccount().getId(),
-                            debit: line.getDebit().toString(),
-                            credit: line.getCredit().toString(),
-                        })),
+            if (!existingEntry) {
+                await tx.journalEntry.create({
+                    data: {
+                        id: entry.getId(),
+                        companyId,
+                        status: entry.getStatus(),
+
+                        lines: {
+                            create: entry.getLines().map((line) => ({
+                                id: crypto.randomUUID(),
+                                companyId,
+                                accountId: line.getAccount().getId(),
+                                debit: line.getDebit().toString(),
+                                credit: line.getCredit().toString(),
+                            })),
+                        },
                     },
+                });
+
+                return;
+            }
+
+            await tx.journalEntry.update({
+                where: {
+                    id: entry.getId(),
+                },
+                data: {
+                    status: entry.getStatus(),
                 },
             });
         });

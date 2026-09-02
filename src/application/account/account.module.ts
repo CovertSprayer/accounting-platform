@@ -28,6 +28,6 @@ export const ACCOUNT_REPOSITORY = Symbol(
             inject: [ACCOUNT_REPOSITORY],
         },
     ],
-    exports: [CreateAccount],
+    exports: [CreateAccount, ACCOUNT_REPOSITORY],
 })
 export class AccountModule { }

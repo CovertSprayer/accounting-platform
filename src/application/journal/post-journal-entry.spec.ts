@@ -8,35 +8,51 @@ import { PostJournalEntry } from "./post-journal-entry";
 import { JournalEntryStatus } from "../../domain/journal/journal-entry-status";
 
 describe('PostJournalEntry', () => {
-    it('it should post a journal entry', async () => {
-        const bank = Account.create(
-            'bank',
-            'Bank',
-            AccountType.ASSET,
-        );
+    const bank = Account.create(
+        'bank',
+        'company-1',
+        'Bank',
+        AccountType.ASSET,
+    );
 
-        const revenue = Account.create(
-            'revenue',
-            'Revenue',
-            AccountType.REVENUE,
-        );
+    const revenue = Account.create(
+        'revenue',
+        'company-1',
+        'Sales Revenue',
+        AccountType.REVENUE,
+    );
+
+    it('should post a draft journal entry', async () => {
+        const repository = new InMemoryJournalEntryRepository();
 
         const entry = JournalEntry.create(
             'entry-1',
             [
-                JournalEntryLine.debit(bank, Money.create('10000')),
-                JournalEntryLine.credit(revenue, Money.create('10000')),
-            ]
-        )
+                JournalEntryLine.debit(
+                    bank,
+                    Money.create('10000'),
+                ),
+                JournalEntryLine.credit(
+                    revenue,
+                    Money.create('10000'),
+                ),
+            ],
+        );
 
-        const repository = new InMemoryJournalEntryRepository();
-
-        repository.save('company-1', entry);
+        await repository.save('company-1', entry);
 
         const useCase = new PostJournalEntry(repository);
 
         await useCase.execute('company-1', 'entry-1');
 
-        expect(entry.getStatus()).toBe(JournalEntryStatus.POSTED);
-    })
-})
+        const postedEntry = await repository.findById(
+            'company-1',
+            'entry-1',
+        );
+
+        expect(postedEntry).not.toBeNull();
+        expect(postedEntry!.getStatus()).toBe(
+            JournalEntryStatus.POSTED,
+        );
+    });
+});
