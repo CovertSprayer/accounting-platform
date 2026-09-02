@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { Account } from "../../../../src/domain/account/account";
-import { AccountRepository } from "../../../../src/domain/account/account-repository";
-import { PrismaService } from "../../../../src/infrastructure/database/prisma.service";
-import { AccountType } from "../../../../src/domain/account/account-type";
+import { Account } from "../../../domain/account/account";
+import { AccountRepository } from "../../../domain/account/account-repository";
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
+import { AccountType } from "../../../domain/account/account-type";
 import { AccountType as PrismaAccountType } from "@prisma/client";
 
 
@@ -24,10 +24,12 @@ export class PrismaAccountRepository implements AccountRepository {
     }
 
     async findById(companyId: string, id: string): Promise<Account | null> {
-        const data = await this.prismaService.account.findFirst({
+        const data = await this.prismaService.account.findUnique({
             where: {
-                id,
-                companyId,
+                companyId_id: {
+                    companyId,
+                    id,
+                }
             }
         });
 
@@ -35,7 +37,29 @@ export class PrismaAccountRepository implements AccountRepository {
             return null;
         }
 
-        return Account.create(data.id, data.companyId, data.name, this.toDomainAccountType(data.type));
+        return Account.create(
+            data.id,
+            data.companyId,
+            data.name,
+            this.toDomainAccountType(data.type)
+        );
+    }
+
+    async findAll(companyId: string): Promise<Account[]> {
+        const data = await this.prismaService.account.findMany({
+            where: {
+                companyId,
+            },
+        });
+
+        return data.map((account) =>
+            Account.create(
+                account.id,
+                account.companyId,
+                account.name,
+                this.toDomainAccountType(account.type),
+            ),
+        );
     }
 
     private toDomainAccountType(

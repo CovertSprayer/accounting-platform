@@ -24,18 +24,18 @@ model Company {
 }
 
 model Account {
-  id        String      @id
+  id        String
   companyId String
   name      String
   type      AccountType
 
-  company Company @relation(fields: [companyId], references: [id])
-
+  company      Company            @relation(fields: [companyId], references: [id])
   journalLines JournalEntryLine[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@id([companyId, id])
   @@index([companyId])
 }
 
@@ -56,18 +56,19 @@ model JournalEntry {
 model JournalEntryLine {
   id             String @id
   journalEntryId String
+  companyId      String
   accountId      String
 
   debit  Decimal @db.Decimal(20, 4)
   credit Decimal @db.Decimal(20, 4)
 
   journalEntry JournalEntry @relation(fields: [journalEntryId], references: [id])
-  account      Account      @relation(fields: [accountId], references: [id])
+  account      Account      @relation(fields: [companyId, accountId], references: [companyId, id])
 
   createdAt DateTime @default(now())
 
   @@index([journalEntryId])
-  @@index([accountId])
+  @@index([companyId, accountId])
 }
 
 enum AccountType {

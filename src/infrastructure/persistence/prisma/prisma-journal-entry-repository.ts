@@ -45,6 +45,7 @@ export class PrismaJournalEntryRepository implements JournalEntryRepository {
                     lines: {
                         create: entry.getLines().map((line) => ({
                             id: crypto.randomUUID(),
+                            companyId,
                             accountId: line.getAccount().getId(),
                             debit: line.getDebit().toString(),
                             credit: line.getCredit().toString(),

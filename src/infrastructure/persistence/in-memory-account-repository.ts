@@ -14,4 +14,12 @@ export class InMemoryAccountRepository implements AccountRepository {
     async findById(companyId: string, id: string): Promise<Account | null> {
         return this.accounts.get(`${companyId}:${id}`) ?? null;
     }
+
+    async findAll(companyId: string): Promise<Account[]> {
+        const prefix = `${companyId}:`;
+
+        return Array.from(this.accounts.entries())
+            .filter(([key]) => key.startsWith(prefix))
+            .map(([, account]) => account);
+    }
 }
