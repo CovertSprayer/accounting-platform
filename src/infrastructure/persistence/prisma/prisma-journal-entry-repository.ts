@@ -81,4 +81,24 @@ export class PrismaJournalEntryRepository implements JournalEntryRepository {
             });
         });
     }
+
+    async findAll(companyId: string): Promise<JournalEntry[]> {
+        const entries = await this.prisma.journalEntry.findMany({
+            where: {
+                companyId,
+            },
+            include: {
+                lines: {
+                    include: {
+                        account: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'asc',
+            },
+        })
+
+        return entries.map(entry => JournalEntryMapper.toDomain(entry));
+    }
 }

@@ -11,4 +11,10 @@ export class InMemoryJournalEntryRepository implements JournalEntryRepository {
     async findById(companyId: string, id: string): Promise<JournalEntry | null> {
         return this.entries.get(`${companyId}:${id}`) ?? null;
     }
+
+    async findAll(companyId: string): Promise<JournalEntry[]> {
+        return Array.from(this.entries.entries())
+            .filter(([key]) => key.startsWith(`${companyId}:`))
+            .map(([, entry]) => entry);
+    }
 }

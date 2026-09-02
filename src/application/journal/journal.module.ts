@@ -6,6 +6,8 @@ import { PrismaJournalEntryRepository } from '../../infrastructure/persistence/p
 import { AccountRepository } from 'src/domain/account/account-repository';
 import { JournalController } from './journal.controller';
 import { AccountModule, ACCOUNT_REPOSITORY } from '../account/account.module';
+import { GetJournalEntry } from './get-journal-entry';
+import { ListJournalEntry } from './list-journal-entry';
 
 export const JOURNAL_ENTRY_REPOSITORY = Symbol(
     'JOURNAL_ENTRY_REPOSITORY',
@@ -41,6 +43,22 @@ export const JOURNAL_ENTRY_REPOSITORY = Symbol(
             },
             inject: [JOURNAL_ENTRY_REPOSITORY],
         },
+
+        {
+            provide: GetJournalEntry,
+            useFactory: (repository: JournalEntryRepository) => {
+                return new GetJournalEntry(repository);
+            },
+            inject: [JOURNAL_ENTRY_REPOSITORY],
+        },
+
+        {
+            provide: ListJournalEntry,
+            useFactory: (repository: JournalEntryRepository) => {
+                return new ListJournalEntry(repository);
+            },
+            inject: [JOURNAL_ENTRY_REPOSITORY],
+        }
     ],
 
     exports: [
