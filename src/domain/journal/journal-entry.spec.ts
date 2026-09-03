@@ -35,6 +35,7 @@ describe('JournalEntry', () => {
 
         const entry = JournalEntry.create(
             'journal-1',
+            'company-1',
             date,
             [debitLine, creditLine]
         )
@@ -57,6 +58,7 @@ describe('JournalEntry', () => {
         expect(() =>
             JournalEntry.create(
                 'journal-1',
+                'company-1',
                 date,
                 [debitLine, creditLine],
             ),
@@ -72,6 +74,7 @@ describe('JournalEntry', () => {
         expect(() =>
             JournalEntry.create(
                 'journal-1',
+                'company-1',
                 date,
                 [debitLine],
             ),

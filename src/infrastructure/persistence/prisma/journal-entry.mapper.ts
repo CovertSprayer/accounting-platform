@@ -12,6 +12,7 @@ import {
 export class JournalEntryMapper {
     static toDomain(data: {
         id: string;
+        companyId: string;
         date: Date;
         status: PrismaJournalEntryStatus;
         lines: {
@@ -57,6 +58,7 @@ export class JournalEntryMapper {
 
         return JournalEntry.reconstitute(
             data.id,
+            data.companyId,
             data.date,
             lines,
             this.mapStatus(data.status),

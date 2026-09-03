@@ -23,11 +23,26 @@ describe('InMemoryJournalEntryRepository', () => {
         AccountType.REVENUE
     );
 
+    const company2BankAccount = Account.create(
+        'bank',
+        'company-2',
+        'Bank Account',
+        AccountType.ASSET,
+    );
+
+    const company2RevenueAccount = Account.create(
+        'revenue',
+        'company-2',
+        'Revenue Account',
+        AccountType.REVENUE,
+    );
+
     it('should return all journal entries for a company', async () => {
         const repository = new InMemoryJournalEntryRepository();
 
         const entry1 = JournalEntry.create(
             'entry-1',
+            'company-1',
             new Date('2024-01-15'),
             [
                 JournalEntryLine.debit(bankAccount, Money.create('100')),
@@ -37,6 +52,7 @@ describe('InMemoryJournalEntryRepository', () => {
 
         const entry2 = JournalEntry.create(
             'entry-2',
+            'company-1',
             new Date('2024-01-16'),
             [
                 JournalEntryLine.debit(bankAccount, Money.create('200')),
@@ -61,6 +77,7 @@ describe('InMemoryJournalEntryRepository', () => {
 
         const company1Entry = JournalEntry.create(
             'entry-1',
+            'company-1',
             new Date('2024-01-15'),
             [
                 JournalEntryLine.debit(bankAccount, Money.create('100')),
@@ -70,10 +87,11 @@ describe('InMemoryJournalEntryRepository', () => {
 
         const company2Entry = JournalEntry.create(
             'entry-2',
+            'company-2',
             new Date('2024-01-16'),
             [
-                JournalEntryLine.debit(bankAccount, Money.create('200')),
-                JournalEntryLine.credit(revenueAccount, Money.create('200')),
+                JournalEntryLine.debit(company2BankAccount, Money.create('200')),
+                JournalEntryLine.credit(company2RevenueAccount, Money.create('200')),
             ],
         );
 

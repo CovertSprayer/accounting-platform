@@ -1,4 +1,3 @@
-import { Account } from "../../domain/account/account";
 import { Money } from "../../domain/shared/money";
 import { JournalEntryRepository } from "../../domain/journal/journal-entry-repository";
 import { JournalEntry } from "../../domain/journal/journal-entry";
@@ -43,7 +42,12 @@ export class CreateJournalEntry {
             })
         );
 
-        const journalEntry = JournalEntry.create(input.id, input.date, lines);
+        const journalEntry = JournalEntry.create(
+            input.id,
+            companyId,
+            input.date,
+            lines
+        );
         await this.repository.save(companyId, journalEntry);
         return journalEntry;
     }

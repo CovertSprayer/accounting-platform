@@ -15,6 +15,7 @@ describe('Ledger', () => {
     it('should calculate an asset balance', () => {
         const entry = JournalEntry.create(
             'entry-1',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(cashAccount, Money.create('10000')),
@@ -33,6 +34,7 @@ describe('Ledger', () => {
     it('should calculate a revenue balance', () => {
         const entry = JournalEntry.create(
             'entry-2',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(cashAccount, Money.create('5000')),
@@ -51,6 +53,7 @@ describe('Ledger', () => {
     it('should ignore draft journal entries', () => {
         const entry = JournalEntry.create(
             'entry-1',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(
@@ -75,6 +78,7 @@ describe('Ledger', () => {
     it('should calculate balance across multiple posted entries', () => {
         const entry1 = JournalEntry.create(
             'entry-1',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(
@@ -90,6 +94,7 @@ describe('Ledger', () => {
 
         const entry2 = JournalEntry.create(
             'entry-2',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(
@@ -116,6 +121,7 @@ describe('Ledger', () => {
     it('should calculate net balance when an account has both debits and credits', () => {
         const entry = JournalEntry.create(
             'entry-3',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(
@@ -131,6 +137,7 @@ describe('Ledger', () => {
 
         const adjustmentEntry = JournalEntry.create(
             'entry-4',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(
@@ -167,6 +174,7 @@ describe('Ledger', () => {
 
         const entry = JournalEntry.create(
             'entry-expense',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(
@@ -199,6 +207,7 @@ describe('Ledger', () => {
 
         const entry = JournalEntry.create(
             'entry-liability',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(
@@ -231,6 +240,7 @@ describe('Ledger', () => {
 
         const entry = JournalEntry.create(
             'entry-equity',
+            companyId,
             date,
             [
                 JournalEntryLine.debit(

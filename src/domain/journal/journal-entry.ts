@@ -7,6 +7,7 @@ export class JournalEntry {
 
     private constructor(
         private readonly id: string,
+        private readonly companyId: string,
         private readonly date: Date,
         private readonly lines: JournalEntryLine[],
     ) {
@@ -16,28 +17,44 @@ export class JournalEntry {
 
     static create(
         id: string,
+        companyId: string,
         date: Date,
         lines: JournalEntryLine[],
     ): JournalEntry {
-        return new JournalEntry(id, date, lines);
+        return new JournalEntry(id, companyId, date, lines);
     }
 
     static reconstitute(
         id: string,
+        companyId: string,
         date: Date,
         lines: JournalEntryLine[],
         status: JournalEntryStatus,
     ): JournalEntry {
-        const entry = new JournalEntry(id, date, lines);
+        const entry = new JournalEntry(id, companyId, date, lines);
         entry.status = status;
         return entry;
     }
 
     private validate(): void {
+        if (!this.companyId.trim()) {
+            throw new Error('Journal entry companyId is required');
+        }
+
         if (this.lines.length < 2) {
             throw new Error(
                 'Journal entry must contain at least two lines',
             );
+        }
+
+        for (const line of this.lines) {
+            if (
+                line.getAccount().getCompanyId() !== this.companyId
+            ) {
+                throw new Error(
+                    'Journal entry line account must belong to the same company',
+                );
+            }
         }
 
         const totalDebit = this.lines.reduce(
@@ -71,6 +88,10 @@ export class JournalEntry {
 
     getId(): string {
         return this.id;
+    }
+
+    getCompanyId(): string {
+        return this.companyId;
     }
 
     getDate(): Date {

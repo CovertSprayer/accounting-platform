@@ -27,6 +27,7 @@ describe('GetJournalEntry', () => {
 
         const entry = JournalEntry.create(
             'entry-1',
+            'company-1',
             new Date('2024-01-15'),
             [
                 JournalEntryLine.debit(
@@ -76,6 +77,7 @@ describe('GetJournalEntry', () => {
 
         const entry = JournalEntry.create(
             'entry-1',
+            'company-1',
             new Date('2024-01-15'),
             [
                 JournalEntryLine.debit(

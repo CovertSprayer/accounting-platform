@@ -32,6 +32,7 @@ describe('GetAccountBalance', () => {
 
         const journalEntry = JournalEntry.create(
             'entry-1',
+            'company-1',
             new Date(),
             [
                 JournalEntryLine.debit(cash, Money.create('100.00')),
@@ -41,6 +42,7 @@ describe('GetAccountBalance', () => {
 
         const journalEntry2 = JournalEntry.create(
             'entry-2',
+            'company-1',
             new Date(),
             [
                 JournalEntryLine.debit(cash, Money.create('50.00')),
@@ -106,6 +108,7 @@ describe('GetAccountBalance', () => {
 
         const draftEntry = JournalEntry.create(
             'entry-1',
+            'company-1',
             new Date(),
             [
                 JournalEntryLine.debit(cash, Money.create('100.00')),
@@ -115,6 +118,7 @@ describe('GetAccountBalance', () => {
 
         const postedEntry = JournalEntry.create(
             'entry-2',
+            'company-1',
             new Date(),
             [
                 JournalEntryLine.debit(cash, Money.create('50.00')),
@@ -187,6 +191,7 @@ describe('GetAccountBalance', () => {
 
         const company1Entry = JournalEntry.create(
             'entry-1',
+            'company-1',
             new Date(),
             [
                 JournalEntryLine.debit(company1Cash, Money.create('100.00')),
@@ -196,6 +201,7 @@ describe('GetAccountBalance', () => {
 
         const company2Entry = JournalEntry.create(
             'entry-1',
+            'company-2',
             new Date(),
             [
                 JournalEntryLine.debit(company2Cash, Money.create('9999.00')),
