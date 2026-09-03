@@ -1,0 +1,3 @@
+export const JOURNAL_ENTRY_REPOSITORY = Symbol(
+    'JOURNAL_ENTRY_REPOSITORY',
+);

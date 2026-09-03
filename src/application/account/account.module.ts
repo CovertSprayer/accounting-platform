@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { CreateAccount } from './create-account';
 import { AccountRepository } from '../../domain/account/account-repository';
@@ -7,12 +7,16 @@ import { PrismaAccountRepository } from '../../infrastructure/persistence/prisma
 import { AccountController } from './account.controller';
 import { GetAccount } from './get-account';
 import { ListAccounts } from './list-accounts';
-
-export const ACCOUNT_REPOSITORY = Symbol(
-    'ACCOUNT_REPOSITORY',
-);
+import { GetAccountBalance } from './get-account-balance';
+import { JournalModule } from '../journal/journal.module';
+import { JournalEntryRepository } from '../../domain/journal/journal-entry-repository';
+import { ACCOUNT_REPOSITORY } from './account-repository.token';
+import { JOURNAL_ENTRY_REPOSITORY } from '../journal/journal-entry-repository.token';
 
 @Module({
+    imports: [
+        forwardRef(() => JournalModule),
+    ],
     controllers: [AccountController],
     providers: [
         {
@@ -45,7 +49,22 @@ export const ACCOUNT_REPOSITORY = Symbol(
             },
             inject: [ACCOUNT_REPOSITORY],
         },
+
+        {
+            provide: GetAccountBalance,
+            useFactory: (
+                accountRepository: AccountRepository,
+                journalEntryRepository: JournalEntryRepository
+            ) => {
+                return new GetAccountBalance(accountRepository, journalEntryRepository);
+            },
+            inject: [ACCOUNT_REPOSITORY, JOURNAL_ENTRY_REPOSITORY],
+        },
     ],
-    exports: [CreateAccount, ACCOUNT_REPOSITORY],
+    exports: [
+        CreateAccount, 
+        ACCOUNT_REPOSITORY, 
+        GetAccountBalance
+    ],
 })
 export class AccountModule { }

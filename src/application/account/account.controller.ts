@@ -13,6 +13,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { AccountResponseDto } from './dto/account-response.dto';
 import { GetAccount } from './get-account';
 import { ListAccounts } from './list-accounts';
+import { GetAccountBalance } from './get-account-balance';
 
 @Controller('accounts')
 export class AccountController {
@@ -20,6 +21,7 @@ export class AccountController {
         private readonly createAccount: CreateAccount,
         private readonly getAccount: GetAccount,
         private readonly listAccounts: ListAccounts,
+        private readonly getAccountBalance: GetAccountBalance,
     ) { }
 
     @Post()
@@ -62,5 +64,28 @@ export class AccountController {
         }
 
         return AccountResponseDto.fromDomain(account);
+    }
+
+    @Get(':id/balance')
+    async getBalance(
+        @Param('id') id: string,
+        @Query('companyId') companyId: string,
+    ): Promise<{ balance: string }> {
+        const account = await this.getAccount.execute(
+            companyId,
+            id,
+        );
+
+        if (!account) {
+            throw new NotFoundException(
+                `Account not found: ${id}`,
+            );
+        }
+        const balance = await this.getAccountBalance.execute(
+            companyId,
+            id,
+        );
+
+        return { balance: balance.toString() };
     }
 }

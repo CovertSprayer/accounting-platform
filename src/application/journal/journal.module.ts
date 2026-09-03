@@ -1,20 +1,20 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CreateJournalEntry } from './create-journal-entry';
 import { PostJournalEntry } from './post-journal-entry';
 import { JournalEntryRepository } from '../../domain/journal/journal-entry-repository';
 import { PrismaJournalEntryRepository } from '../../infrastructure/persistence/prisma/prisma-journal-entry-repository';
 import { AccountRepository } from 'src/domain/account/account-repository';
 import { JournalController } from './journal.controller';
-import { AccountModule, ACCOUNT_REPOSITORY } from '../account/account.module';
+import { AccountModule } from '../account/account.module';
 import { GetJournalEntry } from './get-journal-entry';
 import { ListJournalEntry } from './list-journal-entry';
-
-export const JOURNAL_ENTRY_REPOSITORY = Symbol(
-    'JOURNAL_ENTRY_REPOSITORY',
-);
+import { JOURNAL_ENTRY_REPOSITORY } from './journal-entry-repository.token';
+import { ACCOUNT_REPOSITORY } from '../account/account-repository.token';
 
 @Module({
-    imports: [AccountModule],
+    imports: [
+        forwardRef(() => AccountModule),
+    ],
     controllers: [JournalController],
     providers: [
         {
@@ -64,6 +64,7 @@ export const JOURNAL_ENTRY_REPOSITORY = Symbol(
     exports: [
         CreateJournalEntry,
         PostJournalEntry,
+        JOURNAL_ENTRY_REPOSITORY,
     ],
 })
 export class JournalModule { }

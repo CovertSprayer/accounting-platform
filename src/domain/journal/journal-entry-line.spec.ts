@@ -6,6 +6,7 @@ import { Money } from '../shared/money';
 describe('JournalEntryLine', () => {
   const bankAccount = Account.create(
     'account-1',
+    'company-1',
     'Bank',
     AccountType.ASSET,
   );
