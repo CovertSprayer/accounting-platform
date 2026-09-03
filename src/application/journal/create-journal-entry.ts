@@ -7,6 +7,7 @@ import { AccountRepository } from "src/domain/account/account-repository";
 
 export interface CreateJournalEntryInput {
     id: string;
+    date: Date;
     lines: {
         accountId: string,
         type: 'DEBIT' | 'CREDIT',
@@ -42,7 +43,7 @@ export class CreateJournalEntry {
             })
         );
 
-        const journalEntry = JournalEntry.create(input.id, lines);
+        const journalEntry = JournalEntry.create(input.id, input.date, lines);
         await this.repository.save(companyId, journalEntry);
         return journalEntry;
     }

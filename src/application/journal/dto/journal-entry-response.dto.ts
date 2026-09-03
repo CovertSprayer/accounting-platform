@@ -21,15 +21,18 @@ export class JournalEntryLineResponseDto {
 
 export class JournalEntryResponseDto {
     id: string;
+    date: string;
     status: string;
     lines: JournalEntryLineResponseDto[];
 
     constructor(
         id: string,
+        date: string,
         status: string,
         lines: JournalEntryLineResponseDto[],
     ) {
         this.id = id;
+        this.date = date;
         this.status = status;
         this.lines = lines;
     }
@@ -39,6 +42,7 @@ export class JournalEntryResponseDto {
     ): JournalEntryResponseDto {
         return new JournalEntryResponseDto(
             entry.getId(),
+            entry.getDate().toISOString(),
             entry.getStatus(),
             entry.getLines().map((line) => {
                 const debit = line.getDebit();

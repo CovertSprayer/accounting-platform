@@ -43,6 +43,7 @@ export class JournalController {
             dto.companyId,
             {
                 id: dto.id,
+                date: dto.date,
                 lines: dto.lines.map((line) => ({
                     accountId: line.accountId,
                     type: line.type,

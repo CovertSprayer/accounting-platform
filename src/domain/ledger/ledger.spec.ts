@@ -10,10 +10,12 @@ describe('Ledger', () => {
     const companyId = "company-1";
     const cashAccount = Account.create('id-1', companyId, 'Cash', AccountType.ASSET);
     const revenueAccount = Account.create('id-2', companyId, 'Revenue', AccountType.REVENUE);
+    const date = new Date('2024-01-15');
 
     it('should calculate an asset balance', () => {
         const entry = JournalEntry.create(
             'entry-1',
+            date,
             [
                 JournalEntryLine.debit(cashAccount, Money.create('10000')),
                 JournalEntryLine.credit(revenueAccount, Money.create('10000')),
@@ -31,6 +33,7 @@ describe('Ledger', () => {
     it('should calculate a revenue balance', () => {
         const entry = JournalEntry.create(
             'entry-2',
+            date,
             [
                 JournalEntryLine.debit(cashAccount, Money.create('5000')),
                 JournalEntryLine.credit(revenueAccount, Money.create('5000')),
@@ -48,6 +51,7 @@ describe('Ledger', () => {
     it('should ignore draft journal entries', () => {
         const entry = JournalEntry.create(
             'entry-1',
+            date,
             [
                 JournalEntryLine.debit(
                     cashAccount,
@@ -71,6 +75,7 @@ describe('Ledger', () => {
     it('should calculate balance across multiple posted entries', () => {
         const entry1 = JournalEntry.create(
             'entry-1',
+            date,
             [
                 JournalEntryLine.debit(
                     cashAccount,
@@ -85,6 +90,7 @@ describe('Ledger', () => {
 
         const entry2 = JournalEntry.create(
             'entry-2',
+            date,
             [
                 JournalEntryLine.debit(
                     cashAccount,
@@ -110,6 +116,7 @@ describe('Ledger', () => {
     it('should calculate net balance when an account has both debits and credits', () => {
         const entry = JournalEntry.create(
             'entry-3',
+            date,
             [
                 JournalEntryLine.debit(
                     cashAccount,
@@ -124,6 +131,7 @@ describe('Ledger', () => {
 
         const adjustmentEntry = JournalEntry.create(
             'entry-4',
+            date,
             [
                 JournalEntryLine.debit(
                     revenueAccount,
@@ -159,6 +167,7 @@ describe('Ledger', () => {
 
         const entry = JournalEntry.create(
             'entry-expense',
+            date,
             [
                 JournalEntryLine.debit(
                     expenseAccount,
@@ -190,6 +199,7 @@ describe('Ledger', () => {
 
         const entry = JournalEntry.create(
             'entry-liability',
+            date,
             [
                 JournalEntryLine.debit(
                     cashAccount,
@@ -221,6 +231,7 @@ describe('Ledger', () => {
 
         const entry = JournalEntry.create(
             'entry-equity',
+            date,
             [
                 JournalEntryLine.debit(
                     cashAccount,

@@ -28,6 +28,7 @@ describe('InMemoryJournalEntryRepository', () => {
 
         const entry1 = JournalEntry.create(
             'entry-1',
+            new Date('2024-01-15'),
             [
                 JournalEntryLine.debit(bankAccount, Money.create('100')),
                 JournalEntryLine.credit(revenueAccount, Money.create('100')),
@@ -36,6 +37,7 @@ describe('InMemoryJournalEntryRepository', () => {
 
         const entry2 = JournalEntry.create(
             'entry-2',
+            new Date('2024-01-16'),
             [
                 JournalEntryLine.debit(bankAccount, Money.create('200')),
                 JournalEntryLine.credit(revenueAccount, Money.create('200')),
@@ -59,6 +61,7 @@ describe('InMemoryJournalEntryRepository', () => {
 
         const company1Entry = JournalEntry.create(
             'entry-1',
+            new Date('2024-01-15'),
             [
                 JournalEntryLine.debit(bankAccount, Money.create('100')),
                 JournalEntryLine.credit(revenueAccount, Money.create('100')),
@@ -67,6 +70,7 @@ describe('InMemoryJournalEntryRepository', () => {
 
         const company2Entry = JournalEntry.create(
             'entry-2',
+            new Date('2024-01-16'),
             [
                 JournalEntryLine.debit(bankAccount, Money.create('200')),
                 JournalEntryLine.credit(revenueAccount, Money.create('200')),

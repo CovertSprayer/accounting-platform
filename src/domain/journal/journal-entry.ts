@@ -7,6 +7,7 @@ export class JournalEntry {
 
     private constructor(
         private readonly id: string,
+        private readonly date: Date,
         private readonly lines: JournalEntryLine[],
     ) {
         this.status = JournalEntryStatus.DRAFT;
@@ -15,17 +16,19 @@ export class JournalEntry {
 
     static create(
         id: string,
+        date: Date,
         lines: JournalEntryLine[],
     ): JournalEntry {
-        return new JournalEntry(id, lines);
+        return new JournalEntry(id, date, lines);
     }
 
     static reconstitute(
         id: string,
+        date: Date,
         lines: JournalEntryLine[],
         status: JournalEntryStatus,
     ): JournalEntry {
-        const entry = new JournalEntry(id,lines);
+        const entry = new JournalEntry(id, date, lines);
         entry.status = status;
         return entry;
     }
@@ -68,6 +71,10 @@ export class JournalEntry {
 
     getId(): string {
         return this.id;
+    }
+
+    getDate(): Date {
+        return this.date;
     }
 
     getLines(): readonly JournalEntryLine[] {

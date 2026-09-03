@@ -54,6 +54,7 @@ export class PrismaJournalEntryRepository implements JournalEntryRepository {
                     data: {
                         id: entry.getId(),
                         companyId,
+                        date: entry.getDate(),
                         status: entry.getStatus(),
 
                         lines: {

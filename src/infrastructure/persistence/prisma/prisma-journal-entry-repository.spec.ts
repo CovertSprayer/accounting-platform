@@ -109,6 +109,7 @@ describe('PrismaJournalEntryRepository', () => {
     it('should save and retrieve a journal entry', async () => {
         const entry = JournalEntry.create(
             'test-entry-1',
+            new Date('2024-01-15'),
             [
                 JournalEntryLine.debit(
                     bank,
@@ -139,6 +140,7 @@ describe('PrismaJournalEntryRepository', () => {
     it('should update an existing journal entry', async () => {
         const entry = JournalEntry.create(
             'test-entry-2',
+            new Date('2024-01-16'),
             [
                 JournalEntryLine.debit(
                     bank,

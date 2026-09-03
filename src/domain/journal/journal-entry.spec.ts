@@ -8,15 +8,19 @@ import { JournalEntryLine } from "./journal-entry-line";
 describe('JournalEntry', () => {
     const bankAccount = Account.create(
         'account-1',
+        'company-1',
         'Bank',
         AccountType.ASSET
     );
 
     const equipmentAccount = Account.create(
         'account-2',
+        'company-1',
         'Equipment',
         AccountType.ASSET,
     );
+
+    const date = new Date('2024-01-15');
 
     it('should create a balanced journal entry', () => {
         const debitLine = JournalEntryLine.debit(
@@ -31,6 +35,7 @@ describe('JournalEntry', () => {
 
         const entry = JournalEntry.create(
             'journal-1',
+            date,
             [debitLine, creditLine]
         )
 
@@ -52,6 +57,7 @@ describe('JournalEntry', () => {
         expect(() =>
             JournalEntry.create(
                 'journal-1',
+                date,
                 [debitLine, creditLine],
             ),
         ).toThrow('Journal entry must be balanced');
@@ -66,6 +72,7 @@ describe('JournalEntry', () => {
         expect(() =>
             JournalEntry.create(
                 'journal-1',
+                date,
                 [debitLine],
             ),
         ).toThrow(

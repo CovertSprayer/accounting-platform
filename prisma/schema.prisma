@@ -19,8 +19,8 @@ model Company {
   accounts       Account[]
   journalEntries JournalEntry[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 }
 
 model Account {
@@ -32,8 +32,8 @@ model Account {
   company      Company            @relation(fields: [companyId], references: [id])
   journalLines JournalEntryLine[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   @@id([companyId, id])
   @@index([companyId])
@@ -42,13 +42,14 @@ model Account {
 model JournalEntry {
   id        String             @id
   companyId String
+  date      DateTime @db.Date
   status    JournalEntryStatus
 
   company Company            @relation(fields: [companyId], references: [id])
   lines   JournalEntryLine[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   @@index([companyId])
 }
@@ -65,7 +66,7 @@ model JournalEntryLine {
   journalEntry JournalEntry @relation(fields: [journalEntryId], references: [id])
   account      Account      @relation(fields: [companyId, accountId], references: [companyId, id])
 
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
 
   @@index([journalEntryId])
   @@index([companyId, accountId])

@@ -31,6 +31,7 @@ describe('CreateJournalEntry', () => {
 
     const entry = await useCase.execute('company-1', {
       id: 'entry-1',
+      date: new Date('2024-01-15'),
       lines: [
         {
           accountId: bank.getId(),
@@ -70,6 +71,7 @@ describe('CreateJournalEntry', () => {
     await expect(
       useCase.execute('company-1', {
         id: 'entry-1',
+        date: new Date('2024-01-15'),
         lines: [
           {
             accountId: bank.getId(),

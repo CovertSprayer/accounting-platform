@@ -1,5 +1,6 @@
 import {
     IsArray,
+    IsDate,
     IsEnum,
     IsNotEmpty,
     IsString,
@@ -33,6 +34,10 @@ export class CreateJournalEntryDto {
     @IsString()
     @IsNotEmpty()
     id: string;
+
+    @Type(() => Date)
+    @IsDate()
+    date: Date;
 
     @IsArray()
     @ValidateNested({ each: true })
