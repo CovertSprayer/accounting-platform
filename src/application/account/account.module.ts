@@ -12,6 +12,7 @@ import { JournalModule } from '../journal/journal.module';
 import { JournalEntryRepository } from '../../domain/journal/journal-entry-repository';
 import { ACCOUNT_REPOSITORY } from './account-repository.token';
 import { JOURNAL_ENTRY_REPOSITORY } from '../journal/journal-entry-repository.token';
+import { GetTrialBalance } from './get-trial-balance';
 
 @Module({
     imports: [
@@ -60,11 +61,23 @@ import { JOURNAL_ENTRY_REPOSITORY } from '../journal/journal-entry-repository.to
             },
             inject: [ACCOUNT_REPOSITORY, JOURNAL_ENTRY_REPOSITORY],
         },
+
+        {
+            provide: GetTrialBalance,
+            useFactory: (
+                accountRepository: AccountRepository,
+                journalEntryRepository: JournalEntryRepository
+            ) => {
+                return new GetTrialBalance(accountRepository, journalEntryRepository);
+            },
+            inject: [ACCOUNT_REPOSITORY, JOURNAL_ENTRY_REPOSITORY],
+        },
     ],
     exports: [
         CreateAccount, 
         ACCOUNT_REPOSITORY, 
-        GetAccountBalance
+        GetAccountBalance,
+        GetTrialBalance
     ],
 })
 export class AccountModule { }

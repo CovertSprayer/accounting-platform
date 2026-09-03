@@ -14,6 +14,8 @@ import { AccountResponseDto } from './dto/account-response.dto';
 import { GetAccount } from './get-account';
 import { ListAccounts } from './list-accounts';
 import { GetAccountBalance } from './get-account-balance';
+import { GetTrialBalance } from './get-trial-balance';
+import { TrialBalanceResponseDto } from './dto/trial-balance-response.dto';
 
 @Controller('accounts')
 export class AccountController {
@@ -22,6 +24,7 @@ export class AccountController {
         private readonly getAccount: GetAccount,
         private readonly listAccounts: ListAccounts,
         private readonly getAccountBalance: GetAccountBalance,
+        private readonly getTrialBalance: GetTrialBalance,
     ) { }
 
     @Post()
@@ -45,6 +48,17 @@ export class AccountController {
         const accounts = await this.listAccounts.execute(companyId);
 
         return accounts.map(AccountResponseDto.fromDomain);
+    }
+
+    @Get('trial-balance')
+    async getTrialBal(
+        @Query('companyId') companyId: string,
+    ) {
+        const trialBalance = await this.getTrialBalance.execute(
+            companyId,
+        );
+
+        return TrialBalanceResponseDto.fromDomain(companyId, trialBalance);
     }
 
     @Get(':id')
