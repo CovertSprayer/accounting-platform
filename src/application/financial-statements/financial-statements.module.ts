@@ -12,6 +12,7 @@ import { JournalEntryRepository } from '../../domain/journal/journal-entry-repos
 import { GetProfitAndLoss } from './get-profit-and-loss';
 import { FinancialStatementsController } from './financial-statements.controller';
 import { GetBalanceSheet } from './get-balance-sheet';
+import { GetTrialBalance } from './get-trial-balance';
 
 @Module({
     imports: [
@@ -24,6 +25,20 @@ import { GetBalanceSheet } from './get-balance-sheet';
     ],
 
     providers: [
+        {
+            provide: GetTrialBalance,
+            useFactory: (
+                accountRepository: AccountRepository,
+                journalEntryRepository: JournalEntryRepository
+            ) => {
+                return new GetTrialBalance(accountRepository, journalEntryRepository);
+            },
+            inject: [
+                ACCOUNT_REPOSITORY,
+                JOURNAL_ENTRY_REPOSITORY
+            ],
+        },
+
         {
             provide: GetProfitAndLoss,
             useFactory: (

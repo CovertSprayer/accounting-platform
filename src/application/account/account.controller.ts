@@ -14,9 +14,6 @@ import { AccountResponseDto } from './dto/account-response.dto';
 import { GetAccount } from './get-account';
 import { ListAccounts } from './list-accounts';
 import { GetAccountBalance } from './get-account-balance';
-import { GetTrialBalance } from './get-trial-balance';
-import { TrialBalanceResponseDto } from './dto/trial-balance-response.dto';
-import { TrialBalanceQueryDto } from './dto/trial-balance-query.dto';
 import { GeneralLedgerResponseDto } from '../ledger/dto/general-ledger-response.dto';
 import { GetGeneralLedger } from '../ledger/get-general-ledger';
 
@@ -27,7 +24,6 @@ export class AccountController {
         private readonly getAccount: GetAccount,
         private readonly listAccounts: ListAccounts,
         private readonly getAccountBalance: GetAccountBalance,
-        private readonly getTrialBalanceUseCase: GetTrialBalance,
         private readonly getGeneralLedgerUseCase: GetGeneralLedger,
     ) { }
 
@@ -52,24 +48,6 @@ export class AccountController {
         const accounts = await this.listAccounts.execute(companyId);
 
         return accounts.map(AccountResponseDto.fromDomain);
-    }
-
-    @Get('trial-balance')
-    async getTrialBalance(
-        @Query() query: TrialBalanceQueryDto,
-    ): Promise<TrialBalanceResponseDto> {
-        const asOfDate = new Date(query.asOfDate);
-
-        const trialBalance = await this.getTrialBalanceUseCase.execute(
-            query.companyId,
-            asOfDate,
-        );
-
-        return TrialBalanceResponseDto.fromDomain(
-            query.companyId,
-            trialBalance,
-            asOfDate,
-        );
     }
 
     @Get(':id')

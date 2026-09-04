@@ -12,7 +12,6 @@ import { JournalModule } from '../journal/journal.module';
 import { JournalEntryRepository } from '../../domain/journal/journal-entry-repository';
 import { ACCOUNT_REPOSITORY } from './account-repository.token';
 import { JOURNAL_ENTRY_REPOSITORY } from '../journal/journal-entry-repository.token';
-import { GetTrialBalance } from './get-trial-balance';
 import { GetGeneralLedger } from '../ledger/get-general-ledger';
 
 @Module({
@@ -64,17 +63,6 @@ import { GetGeneralLedger } from '../ledger/get-general-ledger';
         },
 
         {
-            provide: GetTrialBalance,
-            useFactory: (
-                accountRepository: AccountRepository,
-                journalEntryRepository: JournalEntryRepository
-            ) => {
-                return new GetTrialBalance(accountRepository, journalEntryRepository);
-            },
-            inject: [ACCOUNT_REPOSITORY, JOURNAL_ENTRY_REPOSITORY],
-        },
-
-        {
             provide: GetGeneralLedger,
             useFactory: (
                 accountRepository: AccountRepository,
@@ -89,7 +77,6 @@ import { GetGeneralLedger } from '../ledger/get-general-ledger';
         CreateAccount, 
         ACCOUNT_REPOSITORY, 
         GetAccountBalance,
-        GetTrialBalance,
         GetGeneralLedger,
     ],
 })
