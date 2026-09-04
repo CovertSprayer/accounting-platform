@@ -26,8 +26,8 @@ export class AccountController {
         private readonly getAccount: GetAccount,
         private readonly listAccounts: ListAccounts,
         private readonly getAccountBalance: GetAccountBalance,
-        private readonly getTrialBalance: GetTrialBalance,
-        private readonly getGeneralLedger: GetGeneralLedger,
+        private readonly getTrialBalanceUseCase: GetTrialBalance,
+        private readonly getGeneralLedgerUseCase: GetGeneralLedger,
     ) { }
 
     @Post()
@@ -54,10 +54,10 @@ export class AccountController {
     }
 
     @Get('trial-balance')
-    async getTrialBal(
+    async getTrialBalance(
         @Query('companyId') companyId: string,
     ) {
-        const trialBalance = await this.getTrialBalance.execute(
+        const trialBalance = await this.getTrialBalanceUseCase.execute(
             companyId,
         );
 
@@ -107,11 +107,11 @@ export class AccountController {
     }
 
     @Get(':id/ledger')
-    async getGL(
+    async getGeneralLedger(
         @Param('id') accountId: string,
         @Query('companyId') companyId: string,
     ): Promise<GeneralLedgerResponseDto> {
-        const ledger = await this.getGeneralLedger.execute(
+        const ledger = await this.getGeneralLedgerUseCase.execute(
             companyId,
             accountId,
         );

@@ -11,6 +11,7 @@ import { JournalEntryRepository } from '../../domain/journal/journal-entry-repos
 
 import { GetProfitAndLoss } from './get-profit-and-loss';
 import { FinancialStatementsController } from './financial-statements.controller';
+import { GetBalanceSheet } from './get-balance-sheet';
 
 @Module({
     imports: [
@@ -39,10 +40,28 @@ import { FinancialStatementsController } from './financial-statements.controller
                 JOURNAL_ENTRY_REPOSITORY,
             ],
         },
+
+        {
+            provide: GetBalanceSheet,
+            useFactory: (
+                accountRepository: AccountRepository,
+                journalEntryRepository: JournalEntryRepository,
+            ) => {
+                return new GetBalanceSheet(
+                    accountRepository,
+                    journalEntryRepository,
+                );
+            },
+            inject: [
+                ACCOUNT_REPOSITORY,
+                JOURNAL_ENTRY_REPOSITORY,
+            ],
+        },
     ],
 
     exports: [
         GetProfitAndLoss,
+        GetBalanceSheet,
     ],
 })
-export class FinancialStatementsModule {}
+export class FinancialStatementsModule { }
