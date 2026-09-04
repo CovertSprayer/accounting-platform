@@ -8,11 +8,17 @@ export class GetProfitAndLoss {
         private readonly journalEntryRepository: JournalEntryRepository,
     ) { }
 
-    async execute(companyId: string): Promise<ProfitAndLoss> {
+    async execute(
+        companyId: string,
+        fromDate: Date,
+        toDate: Date,
+    ): Promise<ProfitAndLoss> {
         const accounts = await this.accountRepository.findAll(companyId);
 
         const entries = await this.journalEntryRepository.findAll(
             companyId,
+            fromDate,
+            toDate,
         );
 
         return ProfitAndLoss.calculate(accounts, entries);

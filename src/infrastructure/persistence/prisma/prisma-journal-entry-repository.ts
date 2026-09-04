@@ -83,10 +83,20 @@ export class PrismaJournalEntryRepository implements JournalEntryRepository {
         });
     }
 
-    async findAll(companyId: string): Promise<JournalEntry[]> {
+    async findAll(
+        companyId: string,
+        fromDate?: Date,
+        toDate?: Date,
+    ): Promise<JournalEntry[]> {
         const entries = await this.prisma.journalEntry.findMany({
             where: {
                 companyId,
+                ...((fromDate || toDate) && {
+                    date: {
+                        ...(fromDate && { gte: fromDate }),
+                        ...(toDate && { lte: toDate }),
+                    },
+                }),
             },
             include: {
                 lines: {

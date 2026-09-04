@@ -8,12 +8,16 @@ export class GetBalanceSheet {
         private readonly journalEntryRepository: JournalEntryRepository,
     ) { }
 
-    async execute(companyId: string): Promise<BalanceSheet> {
+    async execute(companyId: string, asOfDate: Date): Promise<BalanceSheet> {
         const accounts =
             await this.accountRepository.findAll(companyId);
 
         const entries =
-            await this.journalEntryRepository.findAll(companyId);
+            await this.journalEntryRepository.findAll(
+                companyId,
+                undefined,
+                asOfDate,
+            );
 
         return BalanceSheet.calculate(accounts, entries);
     }

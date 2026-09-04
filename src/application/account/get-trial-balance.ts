@@ -8,9 +8,13 @@ export class GetTrialBalance {
         private readonly journalEntryRepository: JournalEntryRepository,
     ) {}
 
-    async execute(companyId: string): Promise<TrialBalance> {
+    async execute(companyId: string, asOfDate: Date): Promise<TrialBalance> {
         const accounts = await this.accountRepository.findAll(companyId);
-        const entries = await this.journalEntryRepository.findAll(companyId);
+        const entries = await this.journalEntryRepository.findAll(
+            companyId,
+            undefined,
+            asOfDate,
+        );
 
         return TrialBalance.calculate(accounts, entries);
     }

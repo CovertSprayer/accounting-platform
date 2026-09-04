@@ -2,6 +2,7 @@ import { TrialBalance } from '../../../domain/ledger/trial-balance';
 
 export class TrialBalanceResponseDto {
     companyId: string;
+    asOfDate: string;
     rows: {
         accountId: string;
         accountName: string;
@@ -14,10 +15,12 @@ export class TrialBalanceResponseDto {
     static fromDomain(
         companyId: string,
         trialBalance: TrialBalance,
+        asOfDate: Date,
     ): TrialBalanceResponseDto {
         const dto = new TrialBalanceResponseDto();
 
         dto.companyId = companyId;
+        dto.asOfDate = asOfDate.toISOString().split('T')[0];
 
         dto.rows = trialBalance.getRows().map(row => ({
             accountId: row.accountId,

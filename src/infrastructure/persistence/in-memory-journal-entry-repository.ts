@@ -12,9 +12,24 @@ export class InMemoryJournalEntryRepository implements JournalEntryRepository {
         return this.entries.get(`${companyId}:${id}`) ?? null;
     }
 
-    async findAll(companyId: string): Promise<JournalEntry[]> {
+    async findAll(
+        companyId: string,
+        fromDate?: Date,
+        toDate?: Date,
+    ): Promise<JournalEntry[]> {
         return Array.from(this.entries.entries())
             .filter(([key]) => key.startsWith(`${companyId}:`))
-            .map(([, entry]) => entry);
+            .map(([, entry]) => entry)
+            .filter((entry) => {
+                if (fromDate && entry.getDate() < fromDate) {
+                    return false;
+                }
+
+                if (toDate && entry.getDate() > toDate) {
+                    return false;
+                }
+
+                return true;
+            });
     }
 }

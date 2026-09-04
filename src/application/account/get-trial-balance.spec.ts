@@ -61,6 +61,7 @@ describe('GetTrialBalance', () => {
 
         const trialBalance = await getTrialBalance.execute(
             companyId,
+            new Date('2024-01-31'),
         );
 
         const rows = trialBalance.getRows();
@@ -176,6 +177,7 @@ describe('GetTrialBalance', () => {
 
         const trialBalance = await getTrialBalance.execute(
             company1,
+            new Date('2024-01-31'),
         );
 
         expect(trialBalance.getTotalDebit().toString()).toBe(
