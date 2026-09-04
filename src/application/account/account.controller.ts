@@ -16,6 +16,8 @@ import { ListAccounts } from './list-accounts';
 import { GetAccountBalance } from './get-account-balance';
 import { GetTrialBalance } from './get-trial-balance';
 import { TrialBalanceResponseDto } from './dto/trial-balance-response.dto';
+import { GeneralLedgerResponseDto } from '../ledger/dto/general-ledger-response.dto';
+import { GetGeneralLedger } from '../ledger/get-general-ledger';
 
 @Controller('accounts')
 export class AccountController {
@@ -25,6 +27,7 @@ export class AccountController {
         private readonly listAccounts: ListAccounts,
         private readonly getAccountBalance: GetAccountBalance,
         private readonly getTrialBalance: GetTrialBalance,
+        private readonly getGeneralLedger: GetGeneralLedger,
     ) { }
 
     @Post()
@@ -101,5 +104,18 @@ export class AccountController {
         );
 
         return { balance: balance.toString() };
+    }
+
+    @Get(':id/ledger')
+    async getGL(
+        @Param('id') accountId: string,
+        @Query('companyId') companyId: string,
+    ): Promise<GeneralLedgerResponseDto> {
+        const ledger = await this.getGeneralLedger.execute(
+            companyId,
+            accountId,
+        );
+
+        return GeneralLedgerResponseDto.fromDomain(ledger);
     }
 }
