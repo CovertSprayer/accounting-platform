@@ -1,4 +1,5 @@
 import { Customer } from './customer';
+import { DomainValidationError } from '../shared/domain-validation.error';
 
 describe('Customer', () => {
   it('should create a customer with all fields', () => {
@@ -97,5 +98,11 @@ describe('Customer', () => {
     expect(() =>
       Customer.create('customer-1', 'company-1', 'Acme Ltd', null, '   '),
     ).toThrow('Customer phone cannot be empty');
+  });
+
+  it('should signal rule violations with DomainValidationError', () => {
+    expect(() =>
+      Customer.create('customer-1', 'company-1', '   '),
+    ).toThrow(DomainValidationError);
   });
 });

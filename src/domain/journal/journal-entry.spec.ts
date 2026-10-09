@@ -3,6 +3,7 @@ import { AccountType } from "../account/account-type"
 import { Money } from "../shared/money";
 import { JournalEntry } from "./journal-entry";
 import { JournalEntryLine } from "./journal-entry-line";
+import { DomainValidationError } from "../shared/domain-validation.error";
 
 
 describe('JournalEntry', () => {
@@ -81,5 +82,26 @@ describe('JournalEntry', () => {
         ).toThrow(
             'Journal entry must contain at least two lines',
         );
+    });
+
+    it('should signal rule violations with DomainValidationError', () => {
+        const debitLine = JournalEntryLine.debit(
+            equipmentAccount,
+            Money.create('80000'),
+        );
+
+        const creditLine = JournalEntryLine.credit(
+            bankAccount,
+            Money.create('70000'),
+        );
+
+        expect(() =>
+            JournalEntry.create(
+                'journal-1',
+                'company-1',
+                date,
+                [debitLine, creditLine],
+            ),
+        ).toThrow(DomainValidationError);
     });
 })

@@ -1,5 +1,6 @@
 import { Account } from "../account/account";
 import { Money } from "../shared/money";
+import { DomainValidationError } from "../shared/domain-validation.error";
 
 export class JournalEntryLine {
     private constructor(
@@ -10,13 +11,13 @@ export class JournalEntryLine {
 
     private static validateAmount(amount: Money): void {
         if (amount.isZero()) {
-            throw new Error(
+            throw new DomainValidationError(
                 'Journal entry line amount must be greater than zero',
             );
         }
 
         if (amount.isNegative()) {
-            throw new Error(
+            throw new DomainValidationError(
                 'Journal entry line amount cannot be negative',
             );
         }

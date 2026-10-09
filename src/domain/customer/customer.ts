@@ -1,3 +1,5 @@
+import { DomainValidationError } from '../shared/domain-validation.error';
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export class Customer {
@@ -37,10 +39,10 @@ export class Customer {
         phone?: string | null,
     ): Customer {
         if (!companyId.trim()) {
-            throw new Error('Company ID cannot be empty');
+            throw new DomainValidationError('Company ID cannot be empty');
         }
         if (!name.trim()) {
-            throw new Error('Customer name cannot be empty');
+            throw new DomainValidationError('Customer name cannot be empty');
         }
 
         return new Customer(
@@ -60,10 +62,10 @@ export class Customer {
         const normalized = email.trim().toLowerCase();
 
         if (!normalized) {
-            throw new Error('Customer email cannot be empty');
+            throw new DomainValidationError('Customer email cannot be empty');
         }
         if (!EMAIL_PATTERN.test(normalized)) {
-            throw new Error('Invalid customer email');
+            throw new DomainValidationError('Invalid customer email');
         }
 
         return normalized;
@@ -77,7 +79,7 @@ export class Customer {
         const normalized = phone.trim();
 
         if (!normalized) {
-            throw new Error('Customer phone cannot be empty');
+            throw new DomainValidationError('Customer phone cannot be empty');
         }
 
         return normalized;

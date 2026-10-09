@@ -1,4 +1,5 @@
 import { AccountType } from './account-type';
+import { DomainValidationError } from '../shared/domain-validation.error';
 
 export class Account {
     constructor(
@@ -31,10 +32,10 @@ export class Account {
         type: AccountType,
     ): Account {
         if (!companyId.trim()) {
-            throw new Error('Company ID cannot be empty');
+            throw new DomainValidationError('Company ID cannot be empty');
         }
         if (!name.trim()) {
-            throw new Error('Account name cannot be empty');
+            throw new DomainValidationError('Account name cannot be empty');
         }
 
         return new Account(id, companyId, name, type);

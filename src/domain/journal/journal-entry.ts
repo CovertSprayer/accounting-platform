@@ -1,6 +1,7 @@
 import Decimal from 'decimal.js';
 import { JournalEntryLine } from './journal-entry-line';
 import { JournalEntryStatus } from './journal-entry-status';
+import { DomainValidationError } from '../shared/domain-validation.error';
 
 export class JournalEntry {
     private status: JournalEntryStatus;
@@ -38,11 +39,11 @@ export class JournalEntry {
 
     private validate(): void {
         if (!this.companyId.trim()) {
-            throw new Error('Journal entry companyId is required');
+            throw new DomainValidationError('Journal entry companyId is required');
         }
 
         if (this.lines.length < 2) {
-            throw new Error(
+            throw new DomainValidationError(
                 'Journal entry must contain at least two lines',
             );
         }
@@ -51,7 +52,7 @@ export class JournalEntry {
             if (
                 line.getAccount().getCompanyId() !== this.companyId
             ) {
-                throw new Error(
+                throw new DomainValidationError(
                     'Journal entry line account must belong to the same company',
                 );
             }
@@ -70,7 +71,7 @@ export class JournalEntry {
         );
 
         if (!totalDebit.equals(totalCredit)) {
-            throw new Error(
+            throw new DomainValidationError(
                 'Journal entry must be balanced',
             );
         }
@@ -78,7 +79,7 @@ export class JournalEntry {
 
     post(): void {
         if (this.status === JournalEntryStatus.POSTED) {
-            throw new Error(
+            throw new DomainValidationError(
                 'Journal entry is already posted',
             );
         }

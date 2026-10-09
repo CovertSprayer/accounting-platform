@@ -1,3 +1,4 @@
+import { DomainValidationError } from '../shared/domain-validation.error';
 
 export class Company {
     constructor(
@@ -7,7 +8,7 @@ export class Company {
 
     static create(id: string, name: string): Company {
         if (!name.trim()) {
-            throw new Error('Company name cannot be empty');
+            throw new DomainValidationError('Company name cannot be empty');
         }
 
         return new Company(id, name.trim());
@@ -23,7 +24,7 @@ export class Company {
 
     rename(name: string): void {
         if (!name.trim()) {
-            throw new Error('Company name cannot be empty');
+            throw new DomainValidationError('Company name cannot be empty');
         }
 
         this.name = name.trim();
