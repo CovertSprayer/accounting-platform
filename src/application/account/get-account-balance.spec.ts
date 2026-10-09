@@ -1,3 +1,4 @@
+import { NotFoundError } from '../shared/not-found.error';
 import { InMemoryAccountRepository } from '../../infrastructure/persistence/in-memory-account-repository';
 import { InMemoryJournalEntryRepository } from '../../infrastructure/persistence/in-memory-journal-entry-repository';
 import { Account } from '../../domain/account/account';
@@ -220,5 +221,16 @@ describe('GetAccountBalance', () => {
         const company1CashBalance = await useCase.execute('company-1', 'cash');
 
         expect(company1CashBalance.toString()).toBe('100.00');
+    });
+
+    it('should throw NotFoundError when account does not exist', async () => {
+        const useCase = new GetAccountBalance(
+            new InMemoryAccountRepository(),
+            new InMemoryJournalEntryRepository(),
+        );
+
+        await expect(
+            useCase.execute('company-1', 'does-not-exist'),
+        ).rejects.toThrow(NotFoundError);
     });
 });

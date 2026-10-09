@@ -1,3 +1,4 @@
+import { DomainValidationError } from '../../domain/shared/domain-validation.error';
 import { Account } from '../../domain/account/account';
 import { AccountType } from '../../domain/account/account-type';
 import { JournalEntryStatus } from '../../domain/journal/journal-entry-status';
@@ -88,5 +89,27 @@ describe('CreateJournalEntry', () => {
     ).rejects.toThrow(
       'Journal entry must be balanced',
     );
+  });
+
+  it('should reject a line referencing an account that does not exist', async () => {
+    const repository = new InMemoryJournalEntryRepository();
+    const accountRepository = new InMemoryAccountRepository();
+
+    await accountRepository.save('company-1', bank);
+
+    const useCase = new CreateJournalEntry(repository, accountRepository);
+
+    const result = useCase.execute('company-1', {
+      id: 'entry-1',
+      date: new Date('2024-01-15'),
+      lines: [
+        { accountId: bank.getId(), type: 'DEBIT', amount: '100' },
+        { accountId: 'does-not-exist', type: 'CREDIT', amount: '100' },
+      ],
+    });
+
+    await expect(result).rejects.toThrow(DomainValidationError);
+    await expect(result).rejects.toThrow('Account not found: does-not-exist');
+    expect(await repository.findById('company-1', 'entry-1')).toBeNull();
   });
 });

@@ -3,6 +3,7 @@ import { AccountBalanceStrategyFactory } from '../../domain/account/account-bala
 import { JournalEntryRepository } from '../../domain/journal/journal-entry-repository';
 import { JournalEntryStatus } from '../../domain/journal/journal-entry-status';
 import { Money } from '../../domain/shared/money';
+import { NotFoundError } from '../shared/not-found.error';
 
 export interface GeneralLedgerEntry {
     journalEntryId: string;
@@ -34,7 +35,7 @@ export class GetGeneralLedger {
         );
 
         if (!account) {
-            throw new Error(`Account not found: ${accountId}`);
+            throw new NotFoundError(`Account not found: ${accountId}`);
         }
 
         const entries = await this.journalEntryRepository.findAll(

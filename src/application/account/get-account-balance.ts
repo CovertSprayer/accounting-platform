@@ -2,6 +2,7 @@ import { AccountRepository } from "../../domain/account/account-repository";
 import { JournalEntryRepository } from "../../domain/journal/journal-entry-repository";
 import { Ledger } from "../../domain/ledger/ledger";
 import { Money } from "../../domain/shared/money";
+import { NotFoundError } from "../shared/not-found.error";
 
 export class GetAccountBalance {
     constructor(
@@ -12,7 +13,7 @@ export class GetAccountBalance {
         const account = await this.repository.findById(companyId, accountId);
 
         if (!account) {
-            throw new Error(`Account not found: ${accountId}`);
+            throw new NotFoundError(`Account not found: ${accountId}`);
         }
 
         const journalEntries = await this.journalEntryRepository.findAll(companyId);

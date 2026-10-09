@@ -1,3 +1,4 @@
+import { NotFoundError } from '../shared/not-found.error';
 import { Account } from '../../domain/account/account';
 import { AccountType } from '../../domain/account/account-type';
 import { InMemoryAccountRepository } from '../../infrastructure/persistence/in-memory-account-repository';
@@ -575,5 +576,16 @@ describe('GetAccountLedger', () => {
         expect(
             ledger.entries[0].balance.toString(),
         ).toBe('1000.00');
+    });
+
+    it('should throw NotFoundError when the account does not exist', async () => {
+        const getGeneralLedger = new GetGeneralLedger(
+            new InMemoryAccountRepository(),
+            new InMemoryJournalEntryRepository(),
+        );
+
+        await expect(
+            getGeneralLedger.execute('company-1', 'does-not-exist'),
+        ).rejects.toThrow(NotFoundError);
     });
 });

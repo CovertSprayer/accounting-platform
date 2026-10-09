@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { DomainValidationErrorFilter } from './infrastructure/http/domain-validation-error.filter';
+import { NotFoundErrorFilter } from './infrastructure/http/not-found-error.filter';
 import { CompanyModule } from './application/company/company.module';
 import { AccountModule } from './application/account/account.module';
 import { JournalModule } from './application/journal/journal.module';
@@ -21,6 +22,10 @@ import { CustomerModule } from './application/customer/customer.module';
         {
             provide: APP_FILTER,
             useClass: DomainValidationErrorFilter,
+        },
+        {
+            provide: APP_FILTER,
+            useClass: NotFoundErrorFilter,
         },
     ],
 })

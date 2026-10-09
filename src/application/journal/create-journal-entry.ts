@@ -3,6 +3,7 @@ import { JournalEntryRepository } from "../../domain/journal/journal-entry-repos
 import { JournalEntry } from "../../domain/journal/journal-entry";
 import { JournalEntryLine } from "../../domain/journal/journal-entry-line";
 import { AccountRepository } from "src/domain/account/account-repository";
+import { DomainValidationError } from "../../domain/shared/domain-validation.error";
 
 export interface CreateJournalEntryInput {
     id: string;
@@ -29,7 +30,7 @@ export class CreateJournalEntry {
                 );
 
                 if (!account) {
-                    throw new Error(`Account not found: ${line.accountId}`);
+                    throw new DomainValidationError(`Account not found: ${line.accountId}`);
                 }
                 
                 const amount = Money.create(line.amount);

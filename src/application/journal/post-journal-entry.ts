@@ -1,5 +1,6 @@
 import { JournalEntry } from "src/domain/journal/journal-entry";
 import { JournalEntryRepository } from "../../domain/journal/journal-entry-repository";
+import { NotFoundError } from "../shared/not-found.error";
 
 export class PostJournalEntry {
     constructor(
@@ -9,7 +10,7 @@ export class PostJournalEntry {
     async execute(companyId: string, id: string): Promise<JournalEntry> {
         const entry = await this.repository.findById(companyId, id);
         if (!entry) {
-            throw new Error(`Journal entry not found: ${id}`);
+            throw new NotFoundError(`Journal entry not found: ${id}`);
         }
 
         entry.post();

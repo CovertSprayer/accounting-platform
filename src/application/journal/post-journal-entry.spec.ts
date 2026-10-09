@@ -1,3 +1,4 @@
+import { NotFoundError } from "../shared/not-found.error";
 import { Account } from "../../domain/account/account";
 import { AccountType } from "../../domain/account/account-type";
 import { JournalEntry } from "../../domain/journal/journal-entry";
@@ -56,5 +57,15 @@ describe('PostJournalEntry', () => {
         expect(postedEntry!.getStatus()).toBe(
             JournalEntryStatus.POSTED,
         );
+    });
+
+    it('should throw NotFoundError when the journal entry does not exist', async () => {
+        const repository = new InMemoryJournalEntryRepository();
+
+        const useCase = new PostJournalEntry(repository);
+
+        await expect(
+            useCase.execute('company-1', 'does-not-exist'),
+        ).rejects.toThrow(NotFoundError);
     });
 });
