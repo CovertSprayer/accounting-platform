@@ -18,6 +18,7 @@ model Company {
 
   accounts       Account[]
   journalEntries JournalEntry[]
+  customers      Customer[]
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
@@ -37,6 +38,22 @@ model Account {
 
   @@id([companyId, id])
   @@index([companyId])
+}
+
+model Customer {
+  id        String
+  companyId String
+  name      String
+  email     String?
+  phone     String?
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@id([companyId, id])
+  @@unique([companyId, email])
 }
 
 model JournalEntry {
