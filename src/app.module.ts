@@ -8,6 +8,7 @@ import { AccountModule } from './application/account/account.module';
 import { JournalModule } from './application/journal/journal.module';
 import { FinancialStatementsModule } from './application/financial-statements/financial-statements.module';
 import { CustomerModule } from './application/customer/customer.module';
+import { VendorModule } from './application/vendor/vendor.module';
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { CustomerModule } from './application/customer/customer.module';
         JournalModule,
         FinancialStatementsModule,
         CustomerModule,
+        VendorModule,
     ],
     providers: [
         {

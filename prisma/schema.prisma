@@ -19,6 +19,7 @@ model Company {
   accounts       Account[]
   journalEntries JournalEntry[]
   customers      Customer[]
+  vendors        Vendor[]
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
@@ -41,6 +42,22 @@ model Account {
 }
 
 model Customer {
+  id        String
+  companyId String
+  name      String
+  email     String?
+  phone     String?
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@id([companyId, id])
+  @@unique([companyId, email])
+}
+
+model Vendor {
   id        String
   companyId String
   name      String
