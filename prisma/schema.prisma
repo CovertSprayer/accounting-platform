@@ -20,6 +20,7 @@ model Company {
   journalEntries JournalEntry[]
   customers      Customer[]
   vendors        Vendor[]
+  invoices       Invoice[]
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
@@ -31,8 +32,10 @@ model Account {
   name      String
   type      AccountType
 
-  company      Company            @relation(fields: [companyId], references: [id])
-  journalLines JournalEntryLine[]
+  company            Company            @relation(fields: [companyId], references: [id])
+  journalLines       JournalEntryLine[]
+  invoiceLines       InvoiceLine[]
+  receivableInvoices Invoice[]          @relation("InvoiceReceivableAccount")
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
@@ -48,7 +51,8 @@ model Customer {
   email     String?
   phone     String?
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  invoices Invoice[]
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
@@ -76,16 +80,65 @@ model Vendor {
 model JournalEntry {
   id        String             @id
   companyId String
-  date      DateTime @db.Date
+  date      DateTime           @db.Date
   status    JournalEntryStatus
 
   company Company            @relation(fields: [companyId], references: [id])
   lines   JournalEntryLine[]
+  invoice Invoice?           @relation("InvoiceJournalEntry")
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
+  // Lets other tables reference a journal entry together with its company,
+  // so the database rejects cross-company links (see Invoice.journalEntry).
+  @@unique([companyId, id])
   @@index([companyId])
+}
+
+model Invoice {
+  id                  String
+  companyId           String
+  customerId          String
+  number              String
+  issueDate           DateTime      @db.Date
+  dueDate             DateTime      @db.Date
+  status              InvoiceStatus
+  journalEntryId      String?
+  receivableAccountId String?
+
+  company           Company       @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  customer          Customer      @relation(fields: [companyId, customerId], references: [companyId, id], onDelete: Restrict)
+  receivableAccount Account?      @relation("InvoiceReceivableAccount", fields: [companyId, receivableAccountId], references: [companyId, id], onDelete: Restrict)
+  journalEntry      JournalEntry? @relation("InvoiceJournalEntry", fields: [companyId, journalEntryId], references: [companyId, id], onDelete: Restrict)
+  lines             InvoiceLine[]
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@id([companyId, id])
+  @@unique([companyId, number])
+  @@unique([companyId, journalEntryId])
+  @@index([companyId, customerId])
+}
+
+model InvoiceLine {
+  id          String  @id
+  companyId   String
+  invoiceId   String
+  accountId   String
+  position    Int
+  description String
+  quantity    Decimal @db.Decimal(20, 4)
+  unitPrice   Decimal @db.Decimal(20, 4)
+
+  invoice Invoice @relation(fields: [companyId, invoiceId], references: [companyId, id], onDelete: Restrict)
+  account Account @relation(fields: [companyId, accountId], references: [companyId, id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@unique([companyId, invoiceId, position])
+  @@index([companyId, accountId])
 }
 
 model JournalEntryLine {
@@ -117,4 +170,9 @@ enum AccountType {
 enum JournalEntryStatus {
   DRAFT
   POSTED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
 }
