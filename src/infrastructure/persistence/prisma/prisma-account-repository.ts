@@ -2,8 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Account } from "../../../domain/account/account";
 import { AccountRepository } from "../../../domain/account/account-repository";
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
-import { AccountType } from "../../../domain/account/account-type";
-import { AccountType as PrismaAccountType } from "@prisma/client";
+import { AccountMapper } from "./account.mapper";
 
 
 @Injectable()
@@ -17,7 +16,7 @@ export class PrismaAccountRepository implements AccountRepository {
             data: {
                 id: account.getId(),
                 name: account.getName(),
-                type: this.toPrismaAccountType(account.getType()),
+                type: AccountMapper.toPrismaType(account.getType()),
                 companyId: companyId,
             }
         })
@@ -37,12 +36,7 @@ export class PrismaAccountRepository implements AccountRepository {
             return null;
         }
 
-        return Account.create(
-            data.id,
-            data.companyId,
-            data.name,
-            this.toDomainAccountType(data.type)
-        );
+        return AccountMapper.toDomain(data);
     }
 
     async findAll(companyId: string): Promise<Account[]> {
@@ -52,55 +46,6 @@ export class PrismaAccountRepository implements AccountRepository {
             },
         });
 
-        return data.map((account) =>
-            Account.create(
-                account.id,
-                account.companyId,
-                account.name,
-                this.toDomainAccountType(account.type),
-            ),
-        );
-    }
-
-    private toDomainAccountType(
-        type: PrismaAccountType,
-    ): AccountType {
-        switch (type) {
-            case PrismaAccountType.ASSET:
-                return AccountType.ASSET;
-
-            case PrismaAccountType.LIABILITY:
-                return AccountType.LIABILITY;
-
-            case PrismaAccountType.EQUITY:
-                return AccountType.EQUITY;
-
-            case PrismaAccountType.REVENUE:
-                return AccountType.REVENUE;
-
-            case PrismaAccountType.EXPENSE:
-                return AccountType.EXPENSE;
-        }
-    }
-
-    private toPrismaAccountType(
-        type: AccountType,
-    ): PrismaAccountType {
-        switch (type) {
-            case AccountType.ASSET:
-                return PrismaAccountType.ASSET;
-
-            case AccountType.LIABILITY:
-                return PrismaAccountType.LIABILITY;
-
-            case AccountType.EQUITY:
-                return PrismaAccountType.EQUITY;
-
-            case AccountType.REVENUE:
-                return PrismaAccountType.REVENUE;
-
-            case AccountType.EXPENSE:
-                return PrismaAccountType.EXPENSE;
-        }
+        return data.map((account) => AccountMapper.toDomain(account));
     }
 }
