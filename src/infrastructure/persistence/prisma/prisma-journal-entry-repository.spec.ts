@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { PrismaJournalEntryRepository } from './prisma-journal-entry-repository';
 import { PrismaService } from '../../database/prisma.service';
+import { PrismaTransactionContext } from '../../database/prisma-transaction-context';
 
 import { JournalEntry } from '../../../domain/journal/journal-entry';
 import { JournalEntryLine } from '../../../domain/journal/journal-entry-line';
@@ -35,6 +36,7 @@ describe('PrismaJournalEntryRepository', () => {
             providers: [
                 PrismaJournalEntryRepository,
                 PrismaService,
+                PrismaTransactionContext,
             ],
         }).compile();
 
@@ -185,5 +187,37 @@ describe('PrismaJournalEntryRepository', () => {
         );
 
         expect(postedEntry!.getLines()).toHaveLength(2);
+    });
+
+    it('should commit immediately when saved outside a unit of work', async () => {
+        const entry = JournalEntry.create(
+            'test-entry-3',
+            companyId,
+            new Date('2024-01-17'),
+            [
+                JournalEntryLine.debit(bank, Money.create('300')),
+                JournalEntryLine.credit(revenue, Money.create('300')),
+            ],
+        );
+
+        await repository.save(companyId, entry);
+
+        // Read through the root client, not the repository.
+        const row = await prisma.journalEntry.findUnique({
+            where: { id: 'test-entry-3' },
+            include: { lines: true },
+        });
+
+        expect(row).not.toBeNull();
+        expect(row!.status).toBe('DRAFT');
+        expect(row!.lines).toHaveLength(2);
+
+        entry.post();
+        await repository.save(companyId, entry);
+
+        const posted = await prisma.journalEntry.findUnique({
+            where: { id: 'test-entry-3' },
+        });
+        expect(posted!.status).toBe('POSTED');
     });
 });

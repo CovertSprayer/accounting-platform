@@ -8,16 +8,38 @@ import { InvoiceAlreadyIssuedError } from '../../../domain/invoice/invoice-alrea
 import { InvoiceNumberAlreadyExistsError } from '../../../domain/invoice/invoice-number-already-exists.error';
 
 import { PrismaService } from '../../database/prisma.service';
+import { PrismaTransactionContext } from '../../database/prisma-transaction-context';
 import { InvoiceMapper, invoiceInclude } from './invoice.mapper';
 
 @Injectable()
 export class PrismaInvoiceRepository implements InvoiceRepository {
     constructor(
         private readonly prisma: PrismaService,
+        private readonly txContext: PrismaTransactionContext,
     ) { }
 
+    // Inside a unit of work this joins its transaction, so a failure here also
+    // rolls back the journal entry written earlier in the same unit of work.
     async save(companyId: string, invoice: Invoice): Promise<void> {
-        const existing = await this.prisma.invoice.findUnique({
+        try {
+            await this.txContext.transaction(this.prisma, (tx) =>
+                this.write(tx, companyId, invoice),
+            );
+        } catch (error) {
+            if (this.isDuplicateNumberError(error)) {
+                throw new InvoiceNumberAlreadyExistsError(companyId, invoice.getNumber());
+            }
+
+            throw error;
+        }
+    }
+
+    private async write(
+        tx: Prisma.TransactionClient,
+        companyId: string,
+        invoice: Invoice,
+    ): Promise<void> {
+        const existing = await tx.invoice.findUnique({
             where: {
                 companyId_id: { companyId, id: invoice.getId() },
             },
@@ -25,7 +47,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
         });
 
         if (!existing) {
-            await this.create(companyId, invoice);
+            await this.create(tx, companyId, invoice);
             return;
         }
 
@@ -34,11 +56,11 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
             return;
         }
 
-        await this.markIssued(companyId, invoice);
+        await this.markIssued(tx, companyId, invoice);
     }
 
     async findById(companyId: string, id: string): Promise<Invoice | null> {
-        const data = await this.prisma.invoice.findUnique({
+        const data = await this.txContext.client(this.prisma).invoice.findUnique({
             where: {
                 companyId_id: { companyId, id },
             },
@@ -49,7 +71,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     }
 
     async findAll(companyId: string): Promise<Invoice[]> {
-        const data = await this.prisma.invoice.findMany({
+        const data = await this.txContext.client(this.prisma).invoice.findMany({
             where: { companyId },
             include: invoiceInclude,
             orderBy: { createdAt: 'asc' },
@@ -59,7 +81,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     }
 
     async findByNumber(companyId: string, number: string): Promise<Invoice | null> {
-        const data = await this.prisma.invoice.findUnique({
+        const data = await this.txContext.client(this.prisma).invoice.findUnique({
             where: {
                 companyId_number: { companyId, number },
             },
@@ -69,51 +91,49 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
         return data ? InvoiceMapper.toDomain(data) : null;
     }
 
-    private async create(companyId: string, invoice: Invoice): Promise<void> {
-        try {
-            await this.prisma.$transaction(async (tx) => {
-                await tx.invoice.create({
-                    data: {
-                        id: invoice.getId(),
-                        companyId,
-                        customerId: invoice.getCustomerId(),
-                        number: invoice.getNumber(),
-                        issueDate: invoice.getIssueDate(),
-                        dueDate: invoice.getDueDate(),
-                        status: InvoiceMapper.toPrismaStatus(invoice.getStatus()),
-                        journalEntryId: invoice.getJournalEntryId(),
-                        receivableAccountId: invoice.getReceivableAccount()?.getId() ?? null,
-                    },
-                });
+    private async create(
+        tx: Prisma.TransactionClient,
+        companyId: string,
+        invoice: Invoice,
+    ): Promise<void> {
+        await tx.invoice.create({
+            data: {
+                id: invoice.getId(),
+                companyId,
+                customerId: invoice.getCustomerId(),
+                number: invoice.getNumber(),
+                issueDate: invoice.getIssueDate(),
+                dueDate: invoice.getDueDate(),
+                status: InvoiceMapper.toPrismaStatus(invoice.getStatus()),
+                journalEntryId: invoice.getJournalEntryId(),
+                receivableAccountId: invoice.getReceivableAccount()?.getId() ?? null,
+            },
+        });
 
-                // toFixed(4), not Money.toString(), which would round to 2 dp.
-                await tx.invoiceLine.createMany({
-                    data: invoice.getLines().map((line, position) => ({
-                        id: crypto.randomUUID(),
-                        companyId,
-                        invoiceId: invoice.getId(),
-                        accountId: line.getRevenueAccount().getId(),
-                        position,
-                        description: line.getDescription(),
-                        quantity: line.getQuantity().toFixed(4),
-                        unitPrice: line.getUnitPrice().toDecimal().toFixed(4),
-                    })),
-                });
-            });
-        } catch (error) {
-            if (this.isDuplicateNumberError(error)) {
-                throw new InvoiceNumberAlreadyExistsError(companyId, invoice.getNumber());
-            }
-
-            throw error;
-        }
+        // toFixed(4), not Money.toString(), which would round to 2 dp.
+        await tx.invoiceLine.createMany({
+            data: invoice.getLines().map((line, position) => ({
+                id: crypto.randomUUID(),
+                companyId,
+                invoiceId: invoice.getId(),
+                accountId: line.getRevenueAccount().getId(),
+                position,
+                description: line.getDescription(),
+                quantity: line.getQuantity().toFixed(4),
+                unitPrice: line.getUnitPrice().toDecimal().toFixed(4),
+            })),
+        });
     }
 
     // Conditional update: only succeeds while the stored row is still DRAFT.
     // A concurrent request that already issued the invoice holds the row lock;
     // once it commits, this UPDATE matches 0 rows and we report the conflict.
-    private async markIssued(companyId: string, invoice: Invoice): Promise<void> {
-        const { count } = await this.prisma.invoice.updateMany({
+    private async markIssued(
+        tx: Prisma.TransactionClient,
+        companyId: string,
+        invoice: Invoice,
+    ): Promise<void> {
+        const { count } = await tx.invoice.updateMany({
             where: {
                 companyId,
                 id: invoice.getId(),

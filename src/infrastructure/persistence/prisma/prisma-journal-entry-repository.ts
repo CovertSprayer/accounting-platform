@@ -4,16 +4,18 @@ import { JournalEntry } from '../../../domain/journal/journal-entry';
 import { JournalEntryRepository } from '../../../domain/journal/journal-entry-repository';
 
 import { PrismaService } from '../../database/prisma.service';
+import { PrismaTransactionContext } from '../../database/prisma-transaction-context';
 import { JournalEntryMapper } from './journal-entry.mapper';
 
 @Injectable()
 export class PrismaJournalEntryRepository implements JournalEntryRepository {
     constructor(
         private readonly prisma: PrismaService,
+        private readonly txContext: PrismaTransactionContext,
     ) { }
 
     async findById(companyId: string, id: string): Promise<JournalEntry | null> {
-        const data = await this.prisma.journalEntry.findFirst({
+        const data = await this.txContext.client(this.prisma).journalEntry.findFirst({
             where: {
                 id,
                 companyId,
@@ -38,7 +40,8 @@ export class PrismaJournalEntryRepository implements JournalEntryRepository {
         companyId: string,
         entry: JournalEntry,
     ): Promise<void> {
-        await this.prisma.$transaction(async (tx) => {
+        // Reuses the unit of work's transaction when one is active.
+        await this.txContext.transaction(this.prisma, async (tx) => {
             const existingEntry = await tx.journalEntry.findFirst({
                 where: {
                     id: entry.getId(),
@@ -88,7 +91,7 @@ export class PrismaJournalEntryRepository implements JournalEntryRepository {
         fromDate?: Date,
         toDate?: Date,
     ): Promise<JournalEntry[]> {
-        const entries = await this.prisma.journalEntry.findMany({
+        const entries = await this.txContext.client(this.prisma).journalEntry.findMany({
             where: {
                 companyId,
                 ...((fromDate || toDate) && {

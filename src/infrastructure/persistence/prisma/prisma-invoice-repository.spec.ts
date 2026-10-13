@@ -1,5 +1,6 @@
 import Decimal from 'decimal.js';
 import { PrismaService } from '../../database/prisma.service';
+import { PrismaTransactionContext } from '../../database/prisma-transaction-context';
 import { PrismaInvoiceRepository } from './prisma-invoice-repository';
 import { Invoice } from '../../../domain/invoice/invoice';
 import { InvoiceLine } from '../../../domain/invoice/invoice-line';
@@ -76,7 +77,7 @@ describe('PrismaInvoiceRepository', () => {
         prisma = new PrismaService();
         await prisma.$connect();
 
-        repository = new PrismaInvoiceRepository(prisma);
+        repository = new PrismaInvoiceRepository(prisma, new PrismaTransactionContext());
 
         await cleanUp();
         await prisma.customer.deleteMany({ where: { companyId: { in: companyIds } } });
