@@ -12,9 +12,12 @@ import {
 import { CreateInvoice } from './create-invoice';
 import { GetInvoice } from './get-invoice';
 import { ListInvoices } from './list-invoices';
+import { IssueInvoice } from './issue-invoice';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { IssueInvoiceDto } from './dto/issue-invoice.dto';
 import { InvoiceResponseDto } from './dto/invoice-response.dto';
 import { InvoiceNumberAlreadyExistsError } from '../../domain/invoice/invoice-number-already-exists.error';
+import { InvoiceAlreadyIssuedError } from '../../domain/invoice/invoice-already-issued.error';
 
 @Controller('invoices')
 export class InvoiceController {
@@ -22,6 +25,7 @@ export class InvoiceController {
         private readonly createInvoice: CreateInvoice,
         private readonly getInvoice: GetInvoice,
         private readonly listInvoices: ListInvoices,
+        private readonly issueInvoice: IssueInvoice,
     ) { }
 
     @Post()
@@ -49,6 +53,31 @@ export class InvoiceController {
             return InvoiceResponseDto.fromDomain(invoice);
         } catch (error) {
             if (error instanceof InvoiceNumberAlreadyExistsError) {
+                throw new ConflictException(error.message);
+            }
+
+            throw error;
+        }
+    }
+
+    @Post(':id/issue')
+    async issue(
+        @Param('id') id: string,
+        @Body() dto: IssueInvoiceDto,
+    ): Promise<InvoiceResponseDto> {
+        try {
+            const invoice = await this.issueInvoice.execute(
+                dto.companyId,
+                {
+                    invoiceId: id,
+                    receivableAccountId: dto.receivableAccountId,
+                    journalEntryId: dto.journalEntryId,
+                },
+            );
+
+            return InvoiceResponseDto.fromDomain(invoice);
+        } catch (error) {
+            if (error instanceof InvoiceAlreadyIssuedError) {
                 throw new ConflictException(error.message);
             }
 
